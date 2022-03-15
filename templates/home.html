@@ -1,0 +1,151 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}Home{% endblock title %} 
+{% block content %}
+
+<div>
+	<br>
+		<form action="" method="post" align="left">
+		{% csrf_token %}
+					<input type="text" name="sen" class="mytext" id="speechToText" placeholder="Please Type or Use Mic">
+					<button type="button" name="button" class="mic" onclick="record()"><img src="{% static 'mic3.png' %}"  alt="My image" height="32px" width="38px" /></button>
+		  			&nbsp&nbsp&nbsp&nbsp
+		  			<input type="submit" name="submit" class="submit">
+		</form>
+		<br>
+		<table cellspacing="20px">
+	</table>
+</div>
+
+<div class="split left">
+		<table cellspacing="20px">
+			<tr>
+				<td class="td">Input Text:</td>
+				<td class="td">{{ text }}</td>
+			</tr>
+			<tr>
+				<td class="td">Key Words In Your Input:</td>
+				<td class="td">
+				<ul class="td" id="list" align="center">
+  					{% for word in words %}
+    				<li id="{{ i }}" style="margin-right: 8px">{{ word }}</li>
+  					{% endfor %}
+				</ul>
+			    </td>
+		    </tr>
+	    </table>
+</div>
+
+<div class="split right">
+
+<div class="float-container">
+	<div class="float-child1">
+		<h2 align="center">Sign Language Animation</h2></div>
+		<div style="text-align:center">	&nbsp&nbsp
+			<div class="float-child2">
+			<button class="submit" onclick="playPause()">Play/Pause</button></div>
+
+</div>
+  	<!--  LETS USE ONLY PLAY PAUSE BUTTON WITH 720 *420 ,IT FITS THE SCREEN ASHISH
+
+  	<button onclick="makeBig()">Big</button>
+  	<button onclick="makeSmall()">Small</button>
+  	<button onclick="makeNormal()">Normal</button>-->
+
+
+  	<div align="center"><video id="videoPlayer" width="500" height="250"  preload="auto" autoplay \>
+    	<source src="" type="video/mp4">
+    Your browser does not support HTML5 video.
+  	</video>
+	  </div>
+	  <h2 id="videoTitle" align="center"></h2>
+  	</div>
+</div>
+
+
+
+<script>
+	//webkitSpeechRecognition api for speech to text conversion
+	function record(){
+		var recognition = new webkitSpeechRecognition();
+		recognition.lang='en-IN';
+
+		recognition.onresult = function(event){
+			console.log(event)
+			document.getElementById('speechToText').value = event.results[0][0].transcript;
+		}
+		recognition.start();
+	 }
+	function play()
+	{
+		var videoSource = new Array();
+		var videoTitle = new Array();
+		var	videos = document.getElementById("list").getElementsByTagName("li");
+		var j;
+		for(j=0;j<videos.length;j++)
+		{
+			videoSource[j] = "/static/" + videos[j].innerHTML +".mp4";
+			videoTitle[j] = videos[j].innerHTML;
+		}
+
+		var i = 0; // define i
+		var videoCount = videoSource.length;
+
+		function videoPlay(videoNum)
+		{
+			document.getElementById("list").getElementsByTagName("li")[videoNum].style.color = "#09edc7";
+			document.getElementById("list").getElementsByTagName("li")[videoNum].style.fontSize = "xx-large";
+			document.getElementById("videoPlayer").setAttribute("src", videoSource[videoNum]);
+			document.getElementById("videoPlayer").setAttribute("title", videoTitle[videoNum]);
+			document.getElementById("videoTitle").innerHTML= videoTitle[videoNum];
+	    	document.getElementById("videoPlayer").load();
+	    	document.getElementById("videoPlayer").play();
+
+		}
+		document.getElementById('videoPlayer').addEventListener('ended', myHandler, false);
+		document.getElementById("list").getElementsByTagName("li")[0].style.color = "#09edc7";
+		document.getElementById("list").getElementsByTagName("li")[0].style.fontSize = "xx-large";
+
+		videoPlay(0); // play the video
+
+		function myHandler()
+		{
+	 		document.getElementById("list").getElementsByTagName("li")[i].style.color = "#feda6a";
+			document.getElementById("list").getElementsByTagName("li")[i].style.fontSize = "20px";
+			i++;
+	    	if (i == videoCount)
+	    	{
+	       	    document.getElementById("videoPlayer").pause();
+	    	}
+	     	else
+	     	{
+	        	videoPlay(i);
+	    	}
+		}
+	}
+	/* LETS USE ONLY PLAY PAUSE BUTTON WITH 720 *420 ,IT FITS THE SCREEN
+	function makeBig() {
+	    document.getElementById("videoPlayer").width = 560;
+		document.getElementById("videoPlayer").height = 360;
+	}
+	function makeSmall() {
+	    document.getElementById("videoPlayer").width = 320;
+		document.getElementById("videoPlayer").height = 180;
+	}
+	function makeNormal() {
+	    document.getElementById("videoPlayer").width = 420;
+		document.getElementById("videoPlayer").height =280;
+	}*/
+	function playPause(){
+  		if (document.getElementById("videoPlayer").paused){
+    		play();}
+  		else{
+    		document.getElementById("videoPlayer").pause();}
+		}
+
+	</script>
+
+
+
+{% endblock content %} 
