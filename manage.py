@@ -3,6 +3,8 @@
 import os
 import sys
 
+credentials_json_key = "key.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_json_key
 
 def main():
     """Run administrative tasks."""
